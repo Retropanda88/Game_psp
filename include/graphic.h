@@ -1,0 +1,20 @@
+#ifndef GRAPHIC_H
+#define GRAPHIC_H
+
+#include <types.h>
+
+class Graphic{
+	public:
+		Graphic();
+		~Graphic();
+		int Init(int w, int h, const char *msg);
+		void Quit();
+		void Update_screen();
+		void cls();
+		void cls(u8 r, u8 g, u8 b);
+
+};
+
+
+
+#endif
