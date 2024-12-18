@@ -12,7 +12,11 @@ class Graphic{
 		void Update_screen();
 		void cls();
 		void cls(u8 r, u8 g, u8 b);
-
+	private:
+		int w;
+		int h;
+		u32 *fb;
+		SDL_Surface *videobuffer;
 };
 
 
