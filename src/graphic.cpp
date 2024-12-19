@@ -15,4 +15,5 @@ int Graphic::Init(u32 w, u32 h, const char *msg){
 		printf("error: %s\n",SDL_GetError());
 		return -1;
 	}
+	
 }
