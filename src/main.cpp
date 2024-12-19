@@ -6,6 +6,6 @@ const int h = 240;
 int main()
 {
 	Graphic g;
-	g.init(w, h, "game");
+	g.Init(w, h, "game");
 	return 0;
 }

@@ -9,10 +9,10 @@ typedef unsigned int  u32, U32;
 
 //enteros con signo
 typedef signed char s8, S8;
-typedef signed short s16, S8;
+typedef signed short s16, S16;
 typedef signed int s32, S32;
 
 
 
 
-#endif */end*/
+#endif /*end*/

@@ -7,6 +7,10 @@ Graphic::Graphic(){
   videobuffer = NULL;
 }
 
+Graphic::~Graphic(){
+	
+}
+
 int Graphic::Init(u32 w, u32 h, const char *msg){
 	this->w = w;
 	this->h = h;
@@ -16,4 +20,5 @@ int Graphic::Init(u32 w, u32 h, const char *msg){
 		return -1;
 	}
 	
+	return 0;
 }

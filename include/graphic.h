@@ -8,7 +8,7 @@ class Graphic{
 	public:
 		Graphic();
 		~Graphic();
-		int Init(int w, int h, const char *msg);
+		int Init(u32 w, u32 h, const char *msg);
 		void Quit();
 		void Update_screen();
 		void cls();
