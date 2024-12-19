@@ -58,3 +58,21 @@ void Graphic::cls(u8 r, u8 g, u8 b)
 	for (int i = 0; i < (w * h); i++)
 		fb[i] = color;
 }
+
+
+void Graphic::pixel(u32 x, u32 y, u8 r, u8 g, u8 b)
+{
+	if (x > w || x < 0 || y > h || y < 0)
+		return;
+
+	u32 color = SDL_MapRGB(videobuffer->format, r, g, b);
+	int index = (y * videobuffer->pitch / 2 + x);
+	fb[index] = color;
+}
+
+void Graphic::Quit()
+{
+	SDL_Quit();
+	SDL_FreeSurface(videobuffer);
+	free(fb);
+}

@@ -10,9 +10,11 @@ int main()
 
 	while (1)
 	{
-		g.cls(255,0,0);
-       g.Update_screen();
-       
+		g.cls(0, 0, 255);
+		g.pixel(10, 10, 255, 0, 0);
+		g.Update_screen();
+
 	}
+	g.Quit();
 	return 0;
 }
