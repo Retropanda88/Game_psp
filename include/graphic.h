@@ -1,6 +1,7 @@
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
 
+#include <SDL/SDL.h>
 #include <types.h>
 
 class Graphic{
