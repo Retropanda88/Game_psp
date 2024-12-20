@@ -15,8 +15,8 @@ class Graphic{
 		void cls();
 		void cls(u8 r, u8 g, u8 b);
 		void pixel(u32 x, u32 y, u8 r, u8 g, u8 b);
-		void draw_line(u32 x1, u32 y1, u32 x2, u32 y2, u32 color);
-		void draw_rect(u32 x, u32 y, u32 w, u32 h, u32 color);
+		void draw_line(int x1, int y1, int x2, int y2, u8 r, u8 g, u8 b);
+		void draw_rect(int  x, int y, int w, int h, u8 r, u8 g, u8 b);
 		void fps_sincronizar(u32 fps);
 		//get
 		u32 get_pixel(u32 x, u32 y);
