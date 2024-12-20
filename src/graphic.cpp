@@ -4,7 +4,7 @@
 #include <graphic.h>
 #include <types.h>
 #include <font.h>
-#include <SDL_manager.h>
+
 
 Graphic::Graphic()
 {
@@ -151,7 +151,8 @@ void Graphic::print_text(int x, int y, u8 r, u8 g, u8 b, const char *s, ...)
 
 void Graphic::draw_surface(u32 x, u32 y, SDL_Surface * src)
 {
-	if(!src) return;
-	SDL_Rect rect={(Sint16)x,(Sint16)y,w,h};
-	SDL_BlitSurface(src,0,videobuffer,&rect);
+	if (!src)
+		return;
+	SDL_Rect rect = { (Sint16) x, (Sint16) y, w, h };
+	SDL_BlitSurface(src, 0, videobuffer, &rect);
 }
