@@ -6,7 +6,7 @@ CC     = gcc
 CXX    = g++
 CFLAGS = -Wall -I./include
 CXXFLAGS = -Wall -I./include
-LDFLAGS =  -lSDL
+LDFLAGS =  -lSDL_image -lSDL
 
 # Carpetas
 SRC_DIR  = src

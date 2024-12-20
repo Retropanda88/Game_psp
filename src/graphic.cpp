@@ -1,7 +1,10 @@
+#include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <graphic.h>
 #include <types.h>
+#include <font.h>
+#include <SDL_manager.h>
 
 Graphic::Graphic()
 {
@@ -114,18 +117,41 @@ void Graphic::draw_rect(int x, int y, int w, int h, u8 r, u8 g, u8 b)
 			pixel(x + i, y + j, r, g, b);
 }
 
-void Graphic::Fps_sincronizar(int frecuencia){
+void Graphic::Fps_sincronizar(int frecuencia)
+{
 	static int t;
 	static int temp;
 	static int t1 = 0;
-	
-	t =  SDL_GetTicks();
-	if(t-t1 >= frecuencia){
-		temp = (t-t1)/frecuencia;
-		t1 += temp*frecuencia;
+
+	t = SDL_GetTicks();
+	if (t - t1 >= frecuencia)
+	{
+		temp = (t - t1) / frecuencia;
+		t1 += temp * frecuencia;
 	}
-	else{
-		SDL_Delay(frecuencia-(t-t1));
-		t1+=frecuencia;
+	else
+	{
+		SDL_Delay(frecuencia - (t - t1));
+		t1 += frecuencia;
 	}
+}
+
+void Graphic::print_text(int x, int y, u8 r, u8 g, u8 b, const char *s, ...)
+{
+	u32 color = SDL_MapRGB(videobuffer->format, r, g, b);
+	char buffer[256];
+
+	va_list zeiger;
+	va_start(zeiger, s);
+	vsprintf(buffer, s, zeiger);
+	va_end(zeiger);
+
+	print(videobuffer, x, y, buffer, color);
+}
+
+void Graphic::draw_surface(u32 x, u32 y, SDL_Surface * src)
+{
+	if(!src) return;
+	SDL_Rect rect={(Sint16)x,(Sint16)y,w,h};
+	SDL_BlitSurface(src,0,videobuffer,&rect);
 }

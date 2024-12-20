@@ -3,6 +3,7 @@
 
 #include <SDL/SDL.h>
 #include <types.h>
+#include <SDL_manager.h>
 
 
 class Graphic{
@@ -19,6 +20,7 @@ class Graphic{
 		void draw_rect(int  x, int y, int w, int h, u8 r, u8 g, u8 b);
 		void Fps_sincronizar(int frecuencia);
 		void draw_surface(u32 x, u32 y, SDL_Surface *src);
+		void print_text(int x, int y, u8 r, u8 g, u8 b, const char *s, ...);
 		//get
 		u32 get_pixel(u32 x, u32 y);
 		u32 get_w(){return w;}

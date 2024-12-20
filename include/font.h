@@ -6,26 +6,19 @@
 
 #include <SDL/SDL.h>
 #include <string.h>
-#include "font.h"
-
 
 #ifdef __cplusplus
 extern "C"{
 #endif 
 
 
-/*extructura que contiene el tamaño del tont_data*/
-static struct bitmapfontMODE {
-       int alto, ancho;
-       }FONTMODE;
-
 void caracter(SDL_Surface *screen,  int x, int y, const char ascii, unsigned int color );
 void fontsize( int w, int h );
-void print(SDL_Surface *screen, int x, int y, char *text, unsigned int color_t);
-void print_f(SDL_Surface *screen, int x, int y, const char *s, unsigned int color_t, ...);
+void print(SDL_Surface *screen, int x, int y, char *text, unsigned int color);
+void print_f(SDL_Surface *screen, int x, int y, unsigned int color,  const char *s...);
 
 
-static char font_data[256*8] = {
+const char font_data[256*8] = {
 	 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,		//  ASCII 0
 	 0x7C, 0x82, 0x51, 0x21, 0x21, 0x41, 0x82, 0x7C,        //  ASCII 1
 	 0x7E, 0xFF, 0xDB, 0xFF, 0xC3, 0xE7, 0xFF, 0x7E,	    //  ASCII 2
