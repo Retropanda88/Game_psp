@@ -1,4 +1,5 @@
-#include "Sprite.h"
+#include <Sprite.h>
+#include <SDL/SDL_image.h>
 
 /*
     Sprite library for SDL - using bitmaps
@@ -24,7 +25,7 @@ Sprite::Sprite() {
 }
 
 Sprite::Sprite(const char *file, int frames, int speed) {
-    SDL_Surface *temp = SDL_LoadBMP(file);
+    SDL_Surface *temp = IMG_Load(file);
     sprite = SDL_DisplayFormat(temp);
     SDL_FreeSurface(temp);
     if(sprite == NULL) {

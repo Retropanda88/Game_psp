@@ -4,11 +4,13 @@
 #include <SDL/SDL.h>
 #include <types.h>
 #include <SDL_manager.h>
+#include <Sprite.h>
 
 
 class Graphic
 {
   public:
+	SDL_Surface * videobuffer;
 	Graphic();
 	~Graphic();
 	int Init(u32 w, u32 h, const char *msg);
@@ -45,7 +47,7 @@ class Graphic
 	u32 w;
 	u32 h;
 	u32 *fb;
-	SDL_Surface *videobuffer;
+	// SDL_Surface *videobuffer;
 };
 
 
