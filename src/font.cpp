@@ -1,4 +1,4 @@
-#include "font.h"
+#include <font.h>
 
 static void putpixel(SDL_Surface *s,int x, int y, Uint32 c){
 	SDL_Rect rect={x,y,1,1};
@@ -38,7 +38,7 @@ void print(SDL_Surface *screen, int x, int y, char *text, unsigned int color_t){
            }
      }
 
-void print_f(SDL_Surface *screen, int x, int y, const char *s, unsigned int color_t, ...){
+void print_f(SDL_Surface *screen, int x, int y, unsigned int color,  const char *s...){
     
     char buffer[256];
 
@@ -47,5 +47,5 @@ void print_f(SDL_Surface *screen, int x, int y, const char *s, unsigned int colo
 	vsprintf(buffer, s, zeiger);
 	va_end(zeiger);
 
-    print(screen,x,y,buffer,color_t); 
+    print(screen,x,y,buffer,color); 
      }
