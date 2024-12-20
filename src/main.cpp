@@ -15,6 +15,7 @@ int main()
 		g.draw_line(1,1,50,50,255,255,255);
 		g.draw_rect(10,10,20,20,244,77,99);
 		g.Update_screen();
+		g.Fps_sincronizar(10);
 
 	}
 	g.Quit();

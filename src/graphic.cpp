@@ -113,3 +113,19 @@ void Graphic::draw_rect(int x, int y, int w, int h, u8 r, u8 g, u8 b)
 		for (int j = 0; j < h; j++)
 			pixel(x + i, y + j, r, g, b);
 }
+
+void Graphic::Fps_sincronizar(int frecuencia){
+	static int t;
+	static int temp;
+	static int t1 = 0;
+	
+	t =  SDL_GetTicks();
+	if(t-t1 >= frecuencia){
+		temp = (t-t1)/frecuencia;
+		t1 += temp*frecuencia;
+	}
+	else{
+		SDL_Delay(frecuencia-(t-t1));
+		t1+=frecuencia;
+	}
+}

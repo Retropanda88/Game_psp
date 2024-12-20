@@ -17,7 +17,8 @@ class Graphic{
 		void pixel(u32 x, u32 y, u8 r, u8 g, u8 b);
 		void draw_line(int x1, int y1, int x2, int y2, u8 r, u8 g, u8 b);
 		void draw_rect(int  x, int y, int w, int h, u8 r, u8 g, u8 b);
-		void fps_sincronizar(u32 fps);
+		void Fps_sincronizar(int frecuencia);
+		void draw_surface(u32 x, u32 y, SDL_Surface *src);
 		//get
 		u32 get_pixel(u32 x, u32 y);
 		u32 get_w(){return w;}
