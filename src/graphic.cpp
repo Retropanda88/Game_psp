@@ -1,158 +1,181 @@
-#include <stdarg.h>
+#include <SDL/SDL.h>
 #include <string.h>
-#include <stdlib.h>
+#include <stdio.h>
 #include <graphic.h>
-#include <types.h>
+#include <SDL_manager.h>
 #include <font.h>
+#include <pixel.h>
 
 
-Graphic::Graphic()
-{
-	w = 0;
-	h = 0;
-	videobuffer = NULL;
-}
-
-Graphic::~Graphic()
-{
-
-}
-
-int Graphic::Init(u32 w, u32 h, const char *msg)
-{
-	this->w = w;
-	this->h = h;
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
-	{
-		printf("error: %s\n", SDL_GetError());
-		return -1;
-	}
-
-	videobuffer = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE);
-	if (!videobuffer)
-	{
-		printf("error: %s\n", SDL_GetError());
-		return -1;
-	}
-
-	fb = (u32 *) videobuffer->pixels;
-
-	printf("%s\n", msg);
-
-	SDL_ShowCursor(false);
-
-	return 0;
-}
-
-void Graphic::Update_screen()
-{
-	SDL_Flip(videobuffer);
-}
-
-
-void Graphic::cls()
-{
-	for (u32 i = 0; i < (w * h); i++)
-		fb[i] = 0x00000000;
-
-}
-
-void Graphic::cls(u8 r, u8 g, u8 b)
-{
-	u32 color = SDL_MapRGB(videobuffer->format, r, g, b);
-	for (u32 i = 0; i < (w * h); i++)
-		fb[i] = color;
-}
-
-
-void Graphic::pixel(u32 x, u32 y, u8 r, u8 g, u8 b)
-{
-	if (x > w || x < 0 || y > h || y < 0)
-		return;
-
-	u32 color = SDL_MapRGB(videobuffer->format, r, g, b);
-	int index = (y * videobuffer->pitch / 4 + x);
-	fb[index] = color;
-}
-
-void Graphic::Quit()
-{
-	SDL_Quit();
-	SDL_FreeSurface(videobuffer);
-	free(fb);
-}
-
-u32 Graphic::get_pixel(u32 x, u32 y)
-{
-	if (x > w || x < 0 || y > h || y < 0)
-		return 0x00000000;
-
-	return fb[y * (videobuffer->pitch / 4) + x];
-}
-
-static int max(int a, int b)
-{
-	if (a > b)
-		return a;
+static int max(int a, int b){
+	if(a>b)return a;
 	return b;
 }
 
-void Graphic::draw_line(int x1, int y1, int x2, int y2, u8 r, u8 g, u8 b)
-{
-	int x, y, step;
-	step = max(abs(x2 - x1), abs(y2 - y1));
-	step = step ? step : 1;
-	for (int i = 0; i < step; i++)
-	{
-		x = x1 + (x2 - x1) * i / step;
-		y = y1 + (y2 - y1) * i / step;
-		pixel(x, y, r, g, b);
+CGraphic::CGraphic(){
+	w = 0;
+	h = 0;
+	bpp = 0;
+	Buffer_video = 0;
+}
+
+CGraphic::~CGraphic(){
+	w = 0;
+	h = 0;
+	bpp = 0;
+	SDL_FreeSurface(Buffer_video);
+	Buffer_video = 0;
+}
+
+int CGraphic::Init(){
+	if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER)<0){
+	  printf("error: %s\n",SDL_GetError());
+	  return 1;
+	}
+	
+	printf("sistem video init success..\n");
+	
+	return 0;
+	
+}
+
+int CGraphic::Set_Video(int w, int h, int bpp){
+
+	this->w = w;
+	this->h = h;
+	this->bpp = bpp;	
+	Buffer_video=SDL_SetVideoMode(w,h,bpp,SDL_SWSURFACE);
+	if(Buffer_video == NULL){
+		printf("error: reslocion no sopprtada\n");
+		return 1;
+	}
+
+	SDL_ShowCursor(false);
+
+	fontsize( 6, 6 );
+	
+	printf("set video w->%d h->%d bpp->%d\n",w,h,bpp);
+	return 0;
+}
+
+void CGraphic::clean(){
+	memset(Buffer_video->pixels,0x00,Buffer_video->pitch*Buffer_video->h);
+}
+
+void CGraphic::clean(u8 r, u8 g, u8 b){
+     u32 color = SDL_MapRGB(Buffer_video->format,r,g,b);
+     SDL_FillRect(Buffer_video,0,color);
+}
+
+void CGraphic::Fill_Rect(int x, int y, int w, int h, u32 color){
+	
+	SDL_Rect rect={x,y,w,h};
+	SDL_FillRect(Buffer_video,&rect,color);
+}
+
+void CGraphic::Fill_Rect(int x, int y, int w, int h, u8 r, u8 g, u8 b){
+	SDL_Rect rect={x,y,w,h};
+	u32 color = SDL_MapRGB(Buffer_video->format,r,g,b);
+	SDL_FillRect(Buffer_video,&rect,color);
+}
+
+void CGraphic::Pixel(int x, int y, u32 color){
+	
+	switch(bpp){
+		case 8:
+		  setPixel8(Buffer_video,x,y,color);
+	    break;
+	    case 16:
+	       setPixel16(Buffer_video,x,y,color);
+	    break;
+	    case 32 :
+	      setPixel32(Buffer_video,x,y,color);
+	    break;
+	}
+	
+}
+
+void CGraphic::Pixel(int x, int y, u8 r, u8 g, u8 b){
+	u32 color = SDL_MapRGB(Buffer_video->format,r,g,b);
+	switch(bpp){
+		case 8:
+		  setPixel8(Buffer_video,x,y,color);
+	    break;
+	    case 16:
+	       setPixel16(Buffer_video,x,y,color);
+	    break;
+	    case 32 :
+	      setPixel32(Buffer_video,x,y,color);
+	    break;
+	}
+	
+}
+
+void CGraphic::Line(int x, int y,int x1, int y1, u32 color){
+	int X,Y,dx, dy, step, i;
+	dx = abs(x1-x);
+	dy = abs(y1-y);
+	step = max(dx,dy);
+	step = step?step:1;
+	for(i=0;i<step;i++){
+		X=x+(x1-x)*i/step;
+		Y=y+(y1-y)*i/step;
+		Pixel(X,Y,color);
 	}
 }
 
-void Graphic::draw_rect(int x, int y, int w, int h, u8 r, u8 g, u8 b)
-{
-	for (int i = 0; i < w; i++)
-		for (int j = 0; j < h; j++)
-			pixel(x + i, y + j, r, g, b);
+void CGraphic::Line(int x, int y,int x1, int y1, u8 r, u8 g, u8 b){
+	int X,Y,dx, dy, step, i;
+	dx = abs(x1-x);
+	dy = abs(y1-y);
+	step = max(dx,dy);
+	step = step?step:1;
+	u32 color = SDL_MapRGB(Buffer_video->format,r,g,b);
+	for(i=0;i<step;i++){
+		X=x+(x1-x)*i/step;
+		Y=y+(y1-y)*i/step;
+		Pixel(X,Y,color);
+	}
 }
 
-void Graphic::Fps_sincronizar(int frecuencia)
-{
+void CGraphic::Fps_sincronizar(int frecuencia){
 	static int t;
 	static int temp;
 	static int t1 = 0;
-
-	t = SDL_GetTicks();
-	if (t - t1 >= frecuencia)
-	{
-		temp = (t - t1) / frecuencia;
-		t1 += temp * frecuencia;
+	
+	t =  SDL_GetTicks();
+	if(t-t1 >= frecuencia){
+		temp = (t-t1)/frecuencia;
+		t1 += temp*frecuencia;
 	}
-	else
-	{
-		SDL_Delay(frecuencia - (t - t1));
-		t1 += frecuencia;
+	else{
+		SDL_Delay(frecuencia-(t-t1));
+		t1+=frecuencia;
 	}
 }
 
-void Graphic::print_text(int x, int y, u8 r, u8 g, u8 b, const char *s, ...)
-{
-	u32 color = SDL_MapRGB(videobuffer->format, r, g, b);
+void CGraphic::Draw_s(SDL_Surface *src, int x, int y){
+	SDL_Rect rect={x,y,0,0};
+	SDL_BlitSurface(src,0,Buffer_video,&rect);
+}
+
+void CGraphic::Print_text(int x, int y, u8 r, u8 g, u8 b, const char *s, ...){
 	char buffer[256];
-
 	va_list zeiger;
-	va_start(zeiger, s);
-	vsprintf(buffer, s, zeiger);
+	va_start(zeiger,s);
+	vsprintf(buffer,s,zeiger);
 	va_end(zeiger);
-
-	print(videobuffer, x, y, buffer, color);
+	u32 color = SDL_MapRGB(Buffer_video->format, r,g,b);
+	print(Buffer_video,x,y,buffer,color);
 }
 
-void Graphic::draw_surface(u32 x, u32 y, SDL_Surface * src)
-{
-	if (!src)
-		return;
-	SDL_Rect rect = { (Sint16) x, (Sint16) y, w, h };
-	SDL_BlitSurface(src, 0, videobuffer, &rect);
+
+void CGraphic::Print_text( int x, int y,u32 color, const char *s, ...){
+	char buffer[256];
+	va_list zeiger;
+	va_start(zeiger,s);
+	vsprintf(buffer,s,zeiger);
+	va_end(zeiger);
+	
+	print(Buffer_video,x,y,buffer,color);
 }

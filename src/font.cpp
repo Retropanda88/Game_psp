@@ -1,12 +1,7 @@
 #include <font.h>
 
-/*extructura que contiene el tamaño del tont_data*/
-static struct bitmapfontMODE {
-       int alto, ancho;
-       }FONTMODE;
-
 static void putpixel(SDL_Surface *s,int x, int y, Uint32 c){
-	SDL_Rect rect={(Sint16)x,(Sint16)y,1,1};
+	SDL_Rect rect={x,y,1,1};
 	SDL_FillRect(s,&rect,c);
 }
      
@@ -35,15 +30,15 @@ void fontsize( int w, int h ){
     return;
 }
 
-void print(SDL_Surface *screen, int x, int y, char *text, unsigned int color){
+void print(SDL_Surface *screen, int x, int y, char *text, unsigned int color_t){
      int i;
      int longitud = strlen(text);//es necesario conocer la longitud?
      for(i=0;i<longitud;i++){//recorreremos la derecha
-          caracter(screen,(x+i*(FONTMODE.ancho)),y,(*text++),color);
+          caracter(screen,(x+i*(FONTMODE.ancho)),y,(*text++),color_t);
            }
      }
 
-void print_f(SDL_Surface *screen, int x, int y, unsigned int color,  const char *s...){
+void print_f(SDL_Surface *screen, int x, int y, unsigned int color_t, const char *s, ...){
     
     char buffer[256];
 
@@ -52,5 +47,5 @@ void print_f(SDL_Surface *screen, int x, int y, unsigned int color,  const char 
 	vsprintf(buffer, s, zeiger);
 	va_end(zeiger);
 
-    print(screen,x,y,buffer,color); 
+    print(screen,x,y,buffer,color_t); 
      }
