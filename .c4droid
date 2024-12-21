@@ -1,5 +1,5 @@
-#Thu Dec 19 09:34:29 CST 2024
-binary_fname=build/bin
+#Sat Dec 21 12:36:10 CST 2024
+binary_fname=build/game_c4droid
 prepare_cmds=export PATH\=/busybox-virtual\:(c4droid\:DATADIR)\:(c4droid\:GCCROOT)bin\:(c4droid\:GCCROOT)(c4droid\:PREFIX)/bin/\:$PATH\nexport CC\="(c4droid\:PREFIX)-gcc (c4droid\:PIE) (c4droid\:MAKEMODEARGS)"\nexport CXX\="(c4droid\:PREFIX)-g++ (c4droid\:PIE) (c4droid\:MAKEMODEARGS)"\nexport SHELL\="(c4droid\:DATADIR)sh"\nexport TMPDIR\=(c4droid\:GCCROOT)tmpdir\ncd (c4droid\:CURSRCDIR)
 sm_names=
 make_cmd=make CC\="$CC" CXX\="$CXX" SHELL\="$SHELL"
