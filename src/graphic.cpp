@@ -52,7 +52,7 @@ int CGraphic::Set_Video(int w, int h, int bpp){
 
 	SDL_ShowCursor(false);
 
-	fontsize( 6, 6 );
+	fontsize( 8, 8 );
 	
 	printf("set video w->%d h->%d bpp->%d\n",w,h,bpp);
 	return 0;

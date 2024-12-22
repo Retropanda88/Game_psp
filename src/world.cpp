@@ -6,9 +6,6 @@
 
 
 // funcion para cargar un mapa
-#include <stdio.h>
-#include <stdlib.h>
-
 static SDL_Rect *pos(int x, int y, int w, int h)
 {
 	SDL_Rect *temp = NULL;
@@ -18,14 +15,16 @@ static SDL_Rect *pos(int x, int y, int w, int h)
 		printf("no memori for rects");
 		return NULL;
 	}
-	
-	temp->x=x;
-	temp->y=y;
-	temp->w=w;
-	temp->h=h;
-	
+
+	temp->x = x;
+	temp->y = y;
+	temp->w = w;
+	temp->h = h;
+
 	return temp;
 }
+
+
 
 struct Mapa *load_mapa(const char *fn)
 {
@@ -87,16 +86,21 @@ struct Mapa *load_mapa(const char *fn)
 	}
 
 	// creamos las capas dependiendo la informacion del mapa
-	m->capas[0] = create_surface(32 * 3, 32 * 3, 32);
+	m->capas[0] = create_surface(640, 480, 32);
 
 	SDL_Rect *pos1, *pos2;
 
 
-	pos1 = pos(0, 0, 32, 32);
-	pos2 = pos(32,32, 32, 32);
+	pos1 = pos(6, 38, 36, 36);
 
-	SDL_BlitSurface(m->tile[0], pos1, m->capas[0], pos2);
-
+	for (int j = 0; j < 8; j++)
+	{
+		for(int i=0;i<9;i++){
+			
+		pos2 = pos(i*36, j*36, 36, 36);
+		SDL_BlitSurface(m->tile[0], pos1, m->capas[0], pos2);
+		}
+	}
 
 	fclose(fd);
 	return m;
