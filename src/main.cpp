@@ -91,8 +91,8 @@ int main(int argc, char **argv)
 		display->Print_text(15, 50, 124, 155, 133, "filas %d", m->filas);
 		display->Print_text(15, 60, 124, 155, 133, "col %d", m->columnas);
 
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++)
+		for (int i = 0; i < m->filas; i++)
+			for (int j = 0; j < m->columnas; j++)
 				display->Print_text(15 + (j * 8), 70 + (i * 8), 124, 155, 133, " %d",m->data[i * 3 + j]);
 
 		mover_camara(c, p->get_x(), p->get_y(), w);

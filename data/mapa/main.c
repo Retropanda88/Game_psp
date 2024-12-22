@@ -17,10 +17,10 @@ void save_mapa(const char *fn) {
     }
 
     struct Mapa m;
-    m.w_tile = 32;
-    m.h_tile = 32;
-    m.columnas = 3;
-    m.filas = 3;
+    m.w_tile = 36;
+    m.h_tile = 36;
+    m.columnas = 640/36;
+    m.filas = 480/36;
     
     // Asignar datos del mapa (un ejemplo simple)
     m.data = (int *)malloc(sizeof(int) * m.filas * m.columnas);
@@ -33,7 +33,8 @@ void save_mapa(const char *fn) {
     int contador = 1;
     for (int i = 0; i < m.filas; ++i) {
         for (int j = 0; j < m.columnas; ++j) {
-            m.data[i * m.columnas + j] = contador++;
+            //m.data[i * m.columnas + j] = contador++;
+            m.data[i * m.columnas + j] = 0;
         }
     }
 

@@ -1,7 +1,12 @@
 #include <font.h>
 
+/*extructura que contiene el tamaño del tont_data*/
+static struct bitmapfontMODE {
+       int alto, ancho;
+       }FONTMODE;
+
 static void putpixel(SDL_Surface *s,int x, int y, Uint32 c){
-	SDL_Rect rect={x,y,1,1};
+	SDL_Rect rect={(Sint16)x,(Sint16)y,1,1};
 	SDL_FillRect(s,&rect,c);
 }
      
