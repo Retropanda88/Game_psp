@@ -4,6 +4,7 @@
 #include <SDL/SDL.h>
 
 SDL_Surface *create_surface(SDL_Surface *src, int w, int h);
+SDL_Surface *create_surface(int w, int h, int bpp);
 SDL_Surface *get_rect(SDL_Surface *src, int x, int y, int w, int h);
 SDL_Surface *load_img(const char *fn);
 SDL_Surface *load_imf(const char *fn, Uint32 color);

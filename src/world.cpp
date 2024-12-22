@@ -2,11 +2,30 @@
 #include <stdlib.h>
 
 #include <world.h>
+#include <SDL_manager.h>
 
 
 // funcion para cargar un mapa
 #include <stdio.h>
 #include <stdlib.h>
+
+static SDL_Rect *pos(int x, int y, int w, int h)
+{
+	SDL_Rect *temp = NULL;
+	temp = (SDL_Rect *) malloc(sizeof(SDL_Rect));
+	if (!temp)
+	{
+		printf("no memori for rects");
+		return NULL;
+	}
+	
+	temp->x=x;
+	temp->y=y;
+	temp->w=w;
+	temp->h=h;
+	
+	return temp;
+}
 
 struct Mapa *load_mapa(const char *fn)
 {
@@ -24,7 +43,7 @@ struct Mapa *load_mapa(const char *fn)
 	{
 		printf("error unload file %s\n", fn);
 		free(m);				// Liberar la memoria asignada antes de
-								// retornar NULL
+		// retornar NULL
 		return NULL;
 	}
 
@@ -58,6 +77,26 @@ struct Mapa *load_mapa(const char *fn)
 		free(m);
 		return NULL;
 	}
+
+	// cargamos los tiles
+	m->tile[0] = load_img("data/ttt.png");
+	if (!m)
+	{
+		printf("error unload tile sheet");
+		return NULL;
+	}
+
+	// creamos las capas dependiendo la informacion del mapa
+	m->capas[0] = create_surface(32 * 3, 32 * 3, 32);
+
+	SDL_Rect *pos1, *pos2;
+
+
+	pos1 = pos(0, 0, 32, 32);
+	pos2 = pos(32,32, 32, 32);
+
+	SDL_BlitSurface(m->tile[0], pos1, m->capas[0], pos2);
+
 
 	fclose(fd);
 	return m;

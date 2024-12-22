@@ -82,12 +82,19 @@ int main(int argc, char **argv)
 		p->desplazar(keys);
 #endif
 
+
+        SDL_BlitSurface(m->capas[0],0,display->get_Buffer_video(),0);
 		p->Draw(display->get_Buffer_video(), c);
 		display->Print_text(15, 20, 124, 155, 133, "%s", p->get_name());
 		display->Print_text(15, 30, 124, 155, 133, "w_tile %d", m->w_tile);
 		display->Print_text(15, 40, 124, 155, 133, "h_tile %d", m->h_tile);
 		display->Print_text(15, 50, 124, 155, 133, "filas %d", m->filas);
 		display->Print_text(15, 60, 124, 155, 133, "col %d", m->columnas);
+
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				display->Print_text(15 + (j * 8), 70 + (i * 8), 124, 155, 133, " %d",m->data[i * 3 + j]);
+
 		mover_camara(c, p->get_x(), p->get_y(), w);
 
 		display->Update();

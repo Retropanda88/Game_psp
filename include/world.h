@@ -13,7 +13,7 @@ struct Mapa
 	int filas;
 	int *data;
 	SDL_Surface *capas[4];
-	SDL_Surface *sheet[6]; //ahora solo 4 para crear el mapa
+	SDL_Surface *tile[4]; //ahora solo 4 para crear el mapa
 };
 
 /*esta funcion creara las capas para que se puedan rederizar
