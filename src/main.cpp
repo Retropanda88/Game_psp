@@ -13,15 +13,18 @@
 #include <world.h>
 #include <SDL_manager.h>
 
-
-
-int m_map[20] = { 0, 0, 0, 0, 0 };
-
 const int w_screen = 320;
 const int h_screen = 240;
-const int bpp = 16;
+const int bpp = 32;
 
 struct Mapa *m;
+
+u8 r = 12;
+u8 g = 10;
+u8 b = 19;
+
+SDL_Surface *tilesheet = NULL;
+struct Tile *tile = NULL;
 
 
 /*************************************************************************
@@ -45,6 +48,9 @@ int main(int argc, char **argv)
 	display->Set_Video(w_screen, h_screen, bpp);
 
 	m = load_mapa("data/mapa/mapa.dat");
+	if(!m){
+		return -1;
+	}
 
 	w = new CWorld;
 	w->Init(m);
@@ -56,16 +62,13 @@ int main(int argc, char **argv)
 	p->Load_sheet("data/sheet.bmp", 6, 8);
 	p->Create_sprite();
 
+	tilesheet = load_img("data/tiles.png");
 
+	tile = CutTile(tilesheet, 770, 32, 50, 50);
 
 	c = new Camara;
 	iniciar_camara(c);
 
-
-	/* m->h_tile = 32; m->w_tile = 32;
-
-	   m->columnas = 16; m->filas = 16; m->data=m_map; m->tile[0] =
-	   load_img("data/ttt.png");" */
 
 	while (1)
 	{
@@ -82,19 +85,10 @@ int main(int argc, char **argv)
 		p->desplazar(keys);
 #endif
 
-
-        SDL_BlitSurface(m->capas[0],0,display->get_Buffer_video(),0);
+        SDL_BlitSurface(m->capas[0],NULL,display->get_Buffer_video(),NULL);
+		   
+		   
 		p->Draw(display->get_Buffer_video(), c);
-		display->Print_text(15, 20, 124, 155, 133, "%s", p->get_name());
-		display->Print_text(15, 30, 124, 155, 133, "w_tile %d", m->w_tile);
-		display->Print_text(15, 40, 124, 155, 133, "h_tile %d", m->h_tile);
-		display->Print_text(15, 50, 124, 155, 133, "filas %d", m->filas);
-		display->Print_text(15, 60, 124, 155, 133, "col %d", m->columnas);
-
-		for (int i = 0; i < m->filas; i++)
-			for (int j = 0; j < m->columnas; j++)
-				display->Print_text(15 + (j * 8), 70 + (i * 8), 124, 155, 133, " %d",m->data[i * 3 + j]);
-
 		mover_camara(c, p->get_x(), p->get_y(), w);
 
 		display->Update();

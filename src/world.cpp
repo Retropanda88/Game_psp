@@ -6,125 +6,173 @@
 
 #define Max_tiles 128
 
-enum
-{
-	tierra,
-	pasto,
-};
 
-// pocicion de framentos de tiles
-SDL_Rect c[Max_tiles]
+struct Tile *CutTile(SDL_Surface * src, int x, int y, int w, int h)
 {
+	struct Tile *temp = NULL;
+
+	// Check if the source surface is valid
+	if (!src)
 	{
-	6, 38, 36, 36},
-	{102, 38, 36, 36},
-};
+		printf("Error: source surface (src) is NULL\n");
+		return NULL;
+	}
+
+	// Allocate memory for the Tile structure
+	temp = (struct Tile *)malloc(sizeof(struct Tile));
+	if (!temp)
+	{
+		printf("Error: memory allocation failed\n");
+		return NULL;
+	}
+
+	// Create a new surface for the tile
+	temp->tile = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+	if (!temp->tile)
+	{
+		printf("Error: failed to create tile surface\n");
+		free(temp);
+		return NULL;
+	}
+
+	// Set the rectangle properties
+	temp->rect.x = x;
+	temp->rect.y = y;
+	temp->rect.w = w;
+	temp->rect.h = h;
+
+	// Copy the specified region from src to the new surface
+	if (SDL_BlitSurface(src, &temp->rect, temp->tile, NULL) < 0)
+	{
+		printf("Error: SDL_BlitSurface failed: %s\n", SDL_GetError());
+		SDL_FreeSurface(temp->tile);
+		free(temp);
+		return NULL;
+	}
+
+	// Optimize the tile surface format for the current display
+	SDL_Surface *optimized = SDL_DisplayFormat(temp->tile);
+	if (optimized)
+	{
+		SDL_FreeSurface(temp->tile);
+		temp->tile = optimized;
+	}
+
+	return temp;
+}
 
 
-// funcion para cargar un mapa
-/* static SDL_Rect *pos(int x, int y, int w, int h) { SDL_Rect *temp = NULL;
-   temp = (SDL_Rect *) malloc(sizeof(SDL_Rect)); if (!temp) { printf("no
-   memori for rects"); return NULL; }
+void PrintTile(SDL_Surface * DST, int x, int y, struct Tile *T)
+{
+	// validacion de datos 
+	if (!DST || !T || !T->tile)
+	{
+		printf("Error parametro nolo detectado en tile\n");
+		return;
+	}
+	SDL_Rect rect;
 
-   temp->x = x; temp->y = y; temp->w = w; temp->h = h;
+	rect.x = x;
+	rect.y = y;
 
-   return temp; } */
+
+	if (SDL_BlitSurface(T->tile, NULL, DST, &rect) < 0)
+	{
+		printf("Error al blitear el tile %s\n", SDL_GetError());
+	}
+	return;
+
+}
+
+
 
 struct Mapa *load_mapa(const char *fn)
 {
 	struct Mapa *m = NULL;
+	FILE *fd = fopen(fn, "rb");
+	if (!fd)
+	{
+		printf("Error: archivo no encontrado %s\n", fn);
+		return NULL;
+	}
 
 	m = (struct Mapa *)malloc(sizeof(struct Mapa));
 	if (!m)
 	{
-		printf("error memory fail\n");
-		return NULL;
-	}
-
-	FILE *fd = fopen(fn, "rb");	// Abrir archivo en modo binario
-	if (!fd)
-	{
-		printf("error unload file %s\n", fn);
-		free(m);				// Liberar la memoria asignada antes de
-		// retornar NULL
+		printf("Error: falla al asignar memoria para Mapa\n");
+		fclose(fd);
 		return NULL;
 	}
 
 	// Leer las dimensiones del mapa
-	if (fread(&m->w_tile, sizeof(int), 1, fd) != 1 ||
-		fread(&m->h_tile, sizeof(int), 1, fd) != 1 ||
-		fread(&m->columnas, sizeof(int), 1, fd) != 1 || fread(&m->filas, sizeof(int), 1, fd) != 1)
+	if (fread(&m->w, sizeof(int), 1, fd) != 1 ||
+		fread(&m->h, sizeof(int), 1, fd) != 1 || fread(&m->ntiles, sizeof(int), 1, fd) != 1)
 	{
-		printf("error reading map dimensions\n");
-		fclose(fd);
+		printf("Error: falla al leer las dimensiones del mapa\n");
 		free(m);
-		return NULL;
-	}
-
-	// Asignar memoria para los datos del mapa
-	m->data = (int *)malloc(sizeof(int) * m->filas * m->columnas);
-	if (!m->data)
-	{
-		printf("error memory fail\n");
 		fclose(fd);
-		free(m);
 		return NULL;
 	}
 
-	// Leer los datos del mapa
-	if (fread(m->data, sizeof(int), m->filas * m->columnas, fd) != m->filas * m->columnas)
+	// Asignar memoria para los tiles
+	m->tile = (struct Tile *)malloc(sizeof(struct Tile) * m->ntiles);
+	if (!m->tile)
 	{
-		printf("error reading map data\n");
+		printf("Error: falla al asignar memoria para los tiles\n");
+		free(m);
 		fclose(fd);
-		free(m->data);
-		free(m);
 		return NULL;
 	}
 
-	// cargamos los tiles
-	m->tile[0] = load_img("data/ttt.png");
-	if (!m)
+	// Leer cada tile
+	for (int i = 0; i < m->ntiles; i++)
 	{
-		printf("error unload tile sheet");
-		return NULL;
-	}
-
-	// creamos las capas dependiendo la informacion del mapa
-
-
-	// capa del pizo
-	for (int i = 0; i < 4; i++)
-	{
-		m->capas[i] = create_surface(640, 480, 32);
-		if (!m->capas[0])
+		if (fread(&m->tile[i].w, sizeof(int), 1, fd) != 1 ||
+			fread(&m->tile[i].h, sizeof(int), 1, fd) != 1)
 		{
-			printf("error surface %s\n", SDL_GetError());
+			printf("Error: falla al leer dimensiones del tile %d\n", i);
+			// Liberar memoria asignada
+			for (int j = 0; j < i; j++)
+				free(m->tile[j].data);
+			free(m->tile);
+			free(m);
+			fclose(fd);
 			return NULL;
 		}
 
-	}
-
-
-	SDL_Rect pos1, pos2;
-
-	for (int j = 0; j < m->columnas; j++)
-	{
-		for (int i = 0; i < m->filas; i++)
+		// Calcular tamaño del tile y asignar memoria
+		int len = m->tile[i].w * m->tile[i].h;
+		m->tile[i].data = (u32 *) malloc(sizeof(u32) * len);
+		if (!m->tile[i].data)
 		{
+			printf("Error: falla al asignar memoria para el tile %d\n", i);
+			for (int j = 0; j < i; j++)
+				free(m->tile[j].data);
+			free(m->tile);
+			free(m);
+			fclose(fd);
+			return NULL;
+		}
 
-			pos1 = c[m->data[j * m->columnas + i]];
-			pos2 ={(Sint16)(i *m->w_tile),(Sint16)( j * m->h_tile), (Uint16)m->w_tile, (Uint16)m->h_tile};
-			SDL_BlitSurface(m->tile[0], &pos1, m->capas[0], &pos2);
+		// Leer datos del tile
+		if (fread(m->tile[i].data, sizeof(u32), len, fd) != (size_t) len)
+		{
+			printf("Error: falla al leer datos del tile %d\n", i);
+			for (int j = 0; j <= i; j++)
+				free(m->tile[j].data);
+			free(m->tile);
+			free(m);
+			fclose(fd);
+			return NULL;
 		}
 	}
-
-	SDL_FreeSurface(m->tile[0]);
 
 	fclose(fd);
 	return m;
 }
 
 
+// clase world
 
 CWorld::CWorld()
 {
@@ -144,10 +192,21 @@ CWorld::~CWorld()
 
 int CWorld::Init(Mapa * m)
 {
-	w_tile = m->w_tile;
-	h_tile = m->h_tile;
-	COL = m->columnas;
-	FILAS = m->filas;
+	w_tile = m->tile[0].w;
+	h_tile = m->tile[0].h;
+	COL = m->w / w_tile;
+	FILAS = m->h / h_tile;
+
+	m->capas[0] = SDL_CreateRGBSurface(0, m->w, m->h, 32, 0, 0, 0, 0);
+
+	u32 *p = (u32 *) m->capas[0]->pixels;
+	for (int q = 0; q < FILAS; q++)
+		for (int k = 0; k < COL; k++)
+			for (int i = 0; i < w_tile; i++)
+				for (int j = 0; j < h_tile; j++)
+					p[(i + (q * w_tile)) * m->w + (j + (k * h_tile))] =
+						m->tile[0].data[i * w_tile + j];
+
 
 	return 0;
 }
