@@ -1,58 +1,36 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-struct Mapa {
-    int w_tile;
-    int h_tile;
-    int columnas;
-    int filas;
-    int *data;
-};
-
-void save_mapa(const char *fn) {
-    FILE *fd = fopen(fn, "wb");
-    if (!fd) {
-        printf("Error al abrir el archivo para escribir\n");
-        return;
-    }
-
-    struct Mapa m;
-    m.w_tile = 36;
-    m.h_tile = 36;
-    m.columnas = 640/36;
-    m.filas = 480/36;
-    
-    // Asignar datos del mapa (un ejemplo simple)
-    m.data = (int *)malloc(sizeof(int) * m.filas * m.columnas);
-    if (!m.data) {
-        printf("Error de memoria\n");
-        fclose(fd);
-        return;
-    }
-
-    int contador = 1;
-    for (int i = 0; i < m.filas; ++i) {
-        for (int j = 0; j < m.columnas; ++j) {
-            //m.data[i * m.columnas + j] = contador++;
-            m.data[i * m.columnas + j] = 0;
-        }
-    }
-
-    // Escribir los datos en el archivo binario
-    fwrite(&m.w_tile, sizeof(int), 1, fd);
-    fwrite(&m.h_tile, sizeof(int), 1, fd);
-    fwrite(&m.columnas, sizeof(int), 1, fd);
-    fwrite(&m.filas, sizeof(int), 1, fd);
-    fwrite(m.data, sizeof(int), m.filas * m.columnas, fd);
-
-    // Liberar memoria y cerrar el archivo
-    free(m.data);
-    fclose(fd);
-
-    printf("Archivo guardado exitosamente.\n");
-}
 
 int main() {
-    save_mapa("mapa.dat");
+    // Dimensiones del mapa
+    int w_tile = 50;    // Ancho del tile
+    int h_tile = 50;    // Alto del tile
+    int filas = 480/w_tile;     // Número de filas
+    int columnas = 640/h_tile;  // Número de columnas
+
+    // Crear un arreglo 2D inicializado con ceros
+    int mapa[13][13] = {0};
+
+    // Abrir el archivo en modo escritura
+    FILE *archivo = fopen("mapa.txt", "w");
+    if (!archivo) {
+        printf("Error: No se pudo crear el archivo.\n");
+        return 1;
+    }
+
+    // Escribir los valores iniciales de w_tile, h_tile, filas y columnas
+    fprintf(archivo, "%d %d %d %d\n", w_tile, h_tile, filas, columnas);
+
+    // Escribir el arreglo 2D (13x13) al archivo
+    for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
+            fprintf(archivo, "%d ", mapa[i][j]);
+        }
+        fprintf(archivo, "\n"); // Salto de línea al final de cada fila
+    }
+
+    // Cerrar el archivo
+    fclose(archivo);
+
+    printf("Archivo 'mapa.txt' creado exitosamente.\n");
     return 0;
 }
