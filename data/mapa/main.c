@@ -81,13 +81,14 @@ int main()
 		u32 *pixel = (u32 *) img->pixels;
 
 		// Recortar y guardar los datos del tile
-		for (int p = 0; p < h_tile; p++)
+		/*for (int p = 0; p < h_tile; p++)
 		{
 			for (int q = 0; q < w_tile; q++)
 			{
 				data[p * w_tile + q] = pixel[(p + y) * img->w + (x + q)];
 			}
-		}
+		}*/
+		CutTile(img, x, y,w_tile, h_tile,data);
 		fwrite(data, 1, sizeof(u32) * 50 * 50, fd);
 	}
 	

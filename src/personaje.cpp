@@ -99,6 +99,10 @@ void CPersonaje::Create_sprite()
 		spr[i]->reverseAnimation();
 		index += h_frame;
 	}
+	
+	//free memory sheet 
+	delete spr[sheet]; 
+	spr[sheet]=0;
 }
 
 void CPersonaje::desplazar(u8 *key){

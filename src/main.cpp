@@ -17,15 +17,9 @@ const int w_screen = 320;
 const int h_screen = 240;
 const int bpp = 32;
 
-struct Mapa *m;
-
-u8 r = 12;
+u8 r = 120;
 u8 g = 10;
-u8 b = 19;
-
-SDL_Surface *tilesheet = NULL;
-struct Tile *tile = NULL;
-
+u8 b = 10;
 
 /*************************************************************************
                          funtion main 
@@ -40,31 +34,23 @@ int main(int argc, char **argv)
 	u8 *keys;
 	Camara *c;
 	CWorld *w;
+    CGraphic *display;
+    CPersonaje *p;
 
-
-	CGraphic *display;
+	
 	display = new CGraphic;
 	display->Init();
 	display->Set_Video(w_screen, h_screen, bpp);
 
-	m = load_mapa("data/mapa/mapa.dat");
-	if(!m){
-		return -1;
-	}
-
 	w = new CWorld;
-	w->Init(m);
-
-	CPersonaje *p;
+	w->LoadMapa("data/mapa/mapa.dat");
+	
 	p = new CPersonaje;
-	p->Init(100, 100, 4, "personaje 1");
+	p->Init(100, 100, 4, "alonso ");
 
 	p->Load_sheet("data/sheet.bmp", 6, 8);
 	p->Create_sprite();
 
-	tilesheet = load_img("data/tiles.png");
-
-	tile = CutTile(tilesheet, 770, 32, 50, 50);
 
 	c = new Camara;
 	iniciar_camara(c);
@@ -85,12 +71,11 @@ int main(int argc, char **argv)
 		p->desplazar(keys);
 #endif
 
-        SDL_BlitSurface(m->capas[0],NULL,display->get_Buffer_video(),NULL);
-		   
-		   
+	
+		w->render_scene(display->get_Buffer_video(), c->x, c->y);
+		display->Print_text( 10, 10,r,g,b,"test game");
 		p->Draw(display->get_Buffer_video(), c);
 		mover_camara(c, p->get_x(), p->get_y(), w);
-
 		display->Update();
 		display->clean(0, 0, 0);
 		display->Fps_sincronizar(10);

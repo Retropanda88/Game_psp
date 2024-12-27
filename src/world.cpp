@@ -190,23 +190,165 @@ CWorld::~CWorld()
 	FILAS = 0;
 }
 
-int CWorld::Init(Mapa * m)
+int CWorld::Init()
 {
-	w_tile = m->tile[0].w;
-	h_tile = m->tile[0].h;
-	COL = m->w / w_tile;
-	FILAS = m->h / h_tile;
-
-	m->capas[0] = SDL_CreateRGBSurface(0, m->w, m->h, 32, 0, 0, 0, 0);
-
-	u32 *p = (u32 *) m->capas[0]->pixels;
-	for (int q = 0; q < FILAS; q++)
-		for (int k = 0; k < COL; k++)
-			for (int i = 0; i < w_tile; i++)
-				for (int j = 0; j < h_tile; j++)
-					p[(i + (q * w_tile)) * m->w + (j + (k * h_tile))] =
-						m->tile[0].data[i * w_tile + j];
-
-
+	w_tile = mapa->tile[0].w;
+	h_tile = mapa->tile[0].h;
+	COL = mapa->w / w_tile;
+	FILAS = mapa->h / h_tile;
 	return 0;
+}
+
+
+int CWorld::LoadMapa(const char *fn){
+	
+	mapa = NULL;
+	FILE *fd = fopen(fn, "rb");
+	if (!fd)
+	{
+		printf("Error: archivo no encontrado %s\n", fn);
+		return -1;;
+	}
+
+	mapa = (struct Mapa *)malloc(sizeof(struct Mapa));
+	if (!mapa)
+	{
+		printf("Error: falla al asignar memoria para Mapa\n");
+		fclose(fd);
+		return -1;
+	}
+
+	// Leer las dimensiones del mapa
+	if (fread(&mapa->w, sizeof(int), 1, fd) != 1 ||
+		fread(&mapa->h, sizeof(int), 1, fd) != 1 || fread(&mapa->ntiles, sizeof(int), 1, fd) != 1)
+	{
+		printf("Error: falla al leer las dimensiones del mapa\n");
+		free(mapa);
+		fclose(fd);
+		return -1;
+	}
+
+	// Asignar memoria para los tiles
+	mapa->tile = (struct Tile *)malloc(sizeof(struct Tile) * mapa->ntiles);
+	if (!mapa->tile)
+	{
+		printf("Error: falla al asignar memoria para los tiles\n");
+		free(mapa);
+		fclose(fd);
+		return -1;
+	}
+
+	// Leer cada tile
+	for (int i = 0; i < mapa->ntiles; i++)
+	{
+		if (fread(&mapa->tile[i].w, sizeof(int), 1, fd) != 1 ||
+			fread(&mapa->tile[i].h, sizeof(int), 1, fd) != 1)
+		{
+			printf("Error: falla al leer dimensiones del tile %d\n", i);
+			// Liberar memoria asignada
+			for (int j = 0; j < i; j++)
+				free(mapa->tile[j].data);
+			free(mapa->tile);
+			free(mapa);
+			fclose(fd);
+			return -1;
+		}
+
+		// Calcular tamaño del tile y asignar memoria
+		int len = mapa->tile[i].w * mapa->tile[i].h;
+		mapa->tile[i].data = (u32 *) malloc(sizeof(u32) * len);
+		if (!mapa->tile[i].data)
+		{
+			printf("Error: falla al asignar memoria para el tile %d\n", i);
+			for (int j = 0; j < i; j++)
+				free(mapa->tile[j].data);
+			free(mapa->tile);
+			free(mapa);
+			fclose(fd);
+			return -1;
+		}
+
+		// Leer datos del tile
+		if (fread(mapa->tile[i].data, sizeof(u32), len, fd) != (size_t) len)
+		{
+			printf("Error: falla al leer datos del tile %d\n", i);
+			for (int j = 0; j <= i; j++)
+				free(mapa->tile[j].data);
+			free(mapa->tile);
+			free(mapa);
+			fclose(fd);
+			return -1;
+		}
+	}
+
+	fclose(fd);
+	
+	//iniciamos 
+	Init();
+	//colocamos los tiles en su lugat
+	createFloor();
+	
+	return 0;
+	
+}
+
+int CWorld::createFloor()
+{
+
+	// Crear la superficie para la primera capa
+	mapa->capas[0] = SDL_CreateRGBSurface(0, mapa->w, mapa->h, 32, 0, 0, 0, 0);
+
+	// Validar que la superficie se haya creado correctamente
+	if (!mapa->capas[0])
+	{
+		printf("Error al crear la superficie: %s\n", SDL_GetError());
+		return -1;
+	}
+
+	u32 *p = (u32 *) mapa->capas[0]->pixels;
+
+	// Copiar los datos de los "tiles" a la superficie
+	for (int q = 0; q < FILAS; q++)
+	{
+		for (int k = 0; k < COL; k++)
+		{
+			for (int i = 0; i < h_tile; i++)
+			{
+				for (int j = 0; j < w_tile; j++)
+				{
+					// Posición en la superficie
+					int surface_index = (q * h_tile + i) * mapa->w + (k * w_tile + j);
+					// Posición en el "tile"
+					int tile_index = i * w_tile + j;
+					// Copiar el pixel
+					p[surface_index] = mapa->tile[0].data[tile_index];
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+
+void CWorld::render_scene(SDL_Surface * screen, int x_cam, int y_cam)
+{
+	int x = x_cam;
+	int y = y_cam;
+
+
+	int i;
+	int j;
+	int fila = y / 32;
+	int columna = x / 32;
+	int desplazamiento_x = x % 32;
+	int desplazamiento_y = y % 32;
+	SDL_Rect rect1;
+
+	i = -x;
+	j = -y;
+	rect1.x = i;
+	rect1.y = j;
+	
+	SDL_BlitSurface(mapa->capas[0],NULL,screen,&rect1);
+
 }

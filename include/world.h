@@ -2,13 +2,14 @@
 #define WORLD_H_
 
 #include <SDL/SDL.h>
-#include "types.h"
+#include <types.h>
+
 
 
 
 struct Tile
 {
-	SDL_Rect rect;	// contiene la posicion y dimencion del tilen
+	SDL_Rect rect;				// contiene la posicion y dimencion del tilen
 	SDL_Surface *tile;
 	int w;
 	int h;
@@ -17,11 +18,11 @@ struct Tile
 
 struct Mapa
 {
-	int w; //ancho del mapa
-	int h; //alto del mapa
+	int w;						// ancho del mapa
+	int h;						// alto del mapa
 	int ntiles;
 	Tile *tile;
-	//esto es para dibujar unicamente
+	// esto es para dibujar unicamente
 	SDL_Surface *capas[4];
 };
 
@@ -48,31 +49,21 @@ class CWorld
   public:
 	CWorld();
 	~CWorld();
-	int Init(Mapa * m);
-
-	int get_w_tile()
-	{
-		return w_tile;
-	}
-	int get_h_tile()
-	{
-		return h_tile;
-	}
-	int get_COL()
-	{
-		return COL;
-	}
-	int get_FILAS()
-	{
-		return FILAS;
-	}
+	int Init();
+	int LoadMapa(const char *fn);
+	int createFloor();
+    void render_scene(SDL_Surface * screen, int x_cam, int y_cam);
+	int get_w_tile(){return w_tile;}
+	int get_h_tile(){return h_tile;}
+	int get_COL(){return COL;}
+	int get_FILAS(){return FILAS;}
 
   private:
-
 	int w_tile;
 	int h_tile;
 	int COL;
 	int FILAS;
+	struct Mapa *mapa;
 
 };
 
