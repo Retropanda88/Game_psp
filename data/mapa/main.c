@@ -126,7 +126,11 @@ int main()
 void CutTile(SDL_Surface * src, int x, int y, int w, int h, u32 * data)
 {
 	SDL_Surface *temp =
-		SDL_CreateRGBSurface(0, w, h, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+		SDL_CreateRGBSurface(0,w,h, 32, 
+                                      0x00FF0000,  // Rojo
+                                      0x0000FF00,  // Verde
+                                      0x000000FF,  // Azul
+                                      0xFF000000); // Alpha
 	if (!temp)
 	{
 		printf("Error al crear superficie temporal: %s\n", SDL_GetError());

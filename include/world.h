@@ -4,7 +4,7 @@
 #include <SDL/SDL.h>
 #include <types.h>
 
-
+#define floor 0
 
 
 struct Tile
