@@ -200,8 +200,9 @@ int CWorld::Init()
 }
 
 
-int CWorld::LoadMapa(const char *fn){
-	
+int CWorld::LoadMapa(const char *fn)
+{
+
 	mapa = NULL;
 	FILE *fd = fopen(fn, "rb");
 	if (!fd)
@@ -282,14 +283,14 @@ int CWorld::LoadMapa(const char *fn){
 	}
 
 	fclose(fd);
-	
-	//iniciamos 
+
+	// iniciamos 
 	Init();
-	//colocamos los tiles en su lugat
+	// colocamos los tiles en su lugat
 	createFloor();
-	
+
 	return 0;
-	
+
 }
 
 int CWorld::createFloor()
@@ -335,20 +336,25 @@ void CWorld::render_scene(SDL_Surface * screen, int x_cam, int y_cam)
 	int x = x_cam;
 	int y = y_cam;
 
+	/*static int fila = 0;
+	static int columna = 0;
+	static int desplazamiento_x = 0;
+	static int desplazamiento_y = 0;
+*/
 
 	int i;
 	int j;
-	int fila = y / 32;
-	int columna = x / 32;
-	int desplazamiento_x = x % 32;
-	int desplazamiento_y = y % 32;
+/*	fila = y / 32;
+	columna = x / 32;
+	desplazamiento_x = x % 32;
+	desplazamiento_y = y % 32;*/
 	SDL_Rect rect1;
 
 	i = -x;
 	j = -y;
 	rect1.x = i;
 	rect1.y = j;
-	
-	SDL_BlitSurface(mapa->capas[0],NULL,screen,&rect1);
+
+	SDL_BlitSurface(mapa->capas[0], NULL, screen, &rect1);
 
 }
